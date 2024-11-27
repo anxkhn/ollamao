@@ -8,7 +8,7 @@ This Python script lets you connect to publicly available Ollama instances and c
 
 **Heads up:** You'll need to find the IP address of a public Ollama instance yourself. But hey, that’s part of the fun, right?
 
-A good place to start is [Shodan.](https://www.shodan.io/search?query=port%3A11434+html%3A%22Ollama%22)
+A good place to start is [Shodan](https://www.shodan.io/search?query=port%3A11434+html%3A%22Ollama%22) or [FOFA](https://en.fofa.info/result?qbase64=cG9ydD0iMTE0MzQiICYmIGJvZHk9Ik9sbGFtYSI%3D)
 
 ---
 
@@ -38,7 +38,7 @@ A good place to start is [Shodan.](https://www.shodan.io/search?query=port%3A114
    ```
 
 2. **Hunt down a public Ollama instance:**  
-   Use [Shodan](https://www.shodan.io/search?query=port%3A11434+html%3A%22Ollama%22) to track down an IP, grab one from `ip_list.txt`, or use your own private instance if you’re fancy like that.
+   Use [Shodan](https://www.shodan.io/search?query=port%3A11434+html%3A%22Ollama%22) / [FOFA](https://en.fofa.info/result?qbase64=cG9ydD0iMTE0MzQiICYmIGJvZHk9Ik9sbGFtYSI%3D) to track down an IP, or grab one from `ip_list.txt`, or use your own private instance if you’re fancy like that.
 
 3. **Run the script:**
 
