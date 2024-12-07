@@ -33,38 +33,103 @@ A good place to start is [Shodan](https://www.shodan.io/search?query=port%3A1143
 
 ---
 
-## Requirements
+### Getting Started with Ollamao Chat
 
-- Python 3.7 or higher
-- `requests` library
+Follow these steps to get chatting with large language models using **Ollamao**.
+
+---
+
+## Step 1: Get an IP Address
+
+To connect to an Ollama instance, you'll need its IP address. Here’s how to find one:
+
+1. **Use Shodan:**  
+   Visit [Shodan](https://www.shodan.io/search?query=port%3A11434+html%3A%22Ollama%22) and search for public Ollama instances using the query `port:11434 html:"Ollama"`.
+
+2. **Try FOFA:**  
+   Access [FOFA](https://en.fofa.info/result?qbase64=cG9ydD0iMTE0MzQiICYmIGJvZHk9Ik9sbGFtYSI%3D) (requires an account) and search for active instances. Use the query `port="11434" && body="Ollama"`.
+
+3. **Check the Public IP List:**  
+   A curated list of active Ollama instances is available [here](https://raw.githubusercontent.com/anxkhn/ollamao/refs/heads/main/ip_list.txt). This is updated regularly with working IPs.
 
 ---
 
-## How to Use
+## Step 2: Install Requirements
 
-1. **Install the `requests` library:**
+Ensure you have Python installed (version 3.7 or higher) and the `requests` library. Install it using:
 
-   ```bash
-   pip install requests 
-   ```
-
-2. **Hunt down a public Ollama instance:**  
-   Use [Shodan](https://www.shodan.io/search?query=port%3A11434+html%3A%22Ollama%22) / [FOFA](https://en.fofa.info/result?qbase64=cG9ydD0iMTE0MzQiICYmIGJvZHk9Ik9sbGFtYSI%3D) to track down an IP, or grab one from `ip_list.txt`, or use your own private instance if you’re fancy like that.
-
-3. **Run the script:**
-
-   ```bash
-   python main.py
-   ```
-
-4. **Follow the prompts:**
-
-   - Enter the IP address of the Ollama instance.
-   - Pick a model from the list (it’ll show you what’s available).
-   - Start chatting! Talk, ask questions, or just see what the LLM has to say.
-   - Type "exit" to end the session.
+```bash
+pip install requests
+```
 
 ---
+
+## Step 3: Run the Script
+
+Launch the script with:
+
+```bash
+python main.py
+```
+
+---
+
+## Step 4: **Connect to an Ollama Instance**
+
+1. **Enter Server Details:**  
+   When prompted, input the IP address and port of the Ollama instance. Default port is `11434`.  
+   The script will verify the connection.
+
+2. **Choose an Action:**  
+   After connecting, you’ll see these options:
+   - Start chatting
+   - Download a model
+   - Delete a model
+   - Load a model into memory
+   - Unload a model from memory
+   - Exit the application
+
+---
+
+## Step 5: **Interactive Chat**
+
+### Starting a Chat Session
+
+1. Select **Start chatting**.  
+2. The script will display available models hosted on the instance.  
+3. Choose a model by number or name and begin chatting.  
+4. Type `exit` to end the session.
+
+---
+
+## Additional Features
+
+### Downloading a Model
+1. Select **Download a model**.  
+2. Browse the [Ollama Model Library](https://ollama.com/library) for options.  
+3. Provide the model name (e.g., `llama2:13b`).  
+4. The script downloads the model to the connected instance.
+
+### Deleting a Model
+1. Select **Delete a model**.  
+2. Pick a model from the available list to remove it from the instance.
+
+### Loading a Model into Memory
+1. Select **Load a model into memory**.  
+2. Choose a model to preload it for faster access.
+
+### Unloading a Model from Memory
+1. Select **Unload a model from memory**.  
+2. Remove a running model from active memory to free resources.
+
+---
+
+## Exiting the Script
+
+Type `exit` at any time to gracefully close the session.  
+
+---
+
 
 ## Disclaimer
 
