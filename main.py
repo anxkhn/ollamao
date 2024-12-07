@@ -1,6 +1,7 @@
 import json
+import webbrowser
 
-import httpx
+import requests
 
 
 def main():
@@ -10,9 +11,26 @@ def main():
     the output to the terminal, and allows you to exit by typing 'exit'.
     """
 
-    base_url = get_base_url()
-    if not base_url:
-        return
+    while True:
+        ip_address = input("Enter the IP address of the Ollama server: ")
+        port = input("Enter the port (press Enter for default 11434): ")
+        port = port if port else "11434"
+        test_url = f"http://{ip_address}:{port}"
+        base_url = f"http://{ip_address}:{port}/api"
+
+        # Check if the Ollama server is running
+        try:
+            response = requests.get(test_url)
+            response.raise_for_status()
+            if "Ollama is running" in response.text:
+                print("Connected to Ollama server successfully!")
+                break
+            else:
+                print(
+                    "Could not connect to Ollama server. Please check the IP address and port."
+                )
+        except requests.exceptions.RequestException as e:
+            print(f"Could not connect to Ollama server: {e}")
 
     while True:
         print("\nChoose an action:")
@@ -41,76 +59,63 @@ def main():
             print("Invalid choice. Please enter a valid number.")
 
 
-def get_base_url():
-    """Gets the base URL from the user, with retries on connection failure."""
-    while True:
-        ip_address = input("Enter the IP address of the Ollama server: ")
-        port = input("Enter the port (press Enter for default 11434): ")
-        port = port if port else "11434"
-        base_url = f"http://{ip_address}:{port}/api"
-
-        try:
-            response = httpx.get(f"{base_url}/tags", timeout=10.0)
-            response.raise_for_status()
-            print("\nAvailable models:")
-            for model in response.json()["models"]:
-                print(f"- {model['name']}")
-            return base_url
-        except httpx.HTTPError as exc:
-            print(f"Error connecting to Ollama server: {exc}")
-            if input("Try a different IP address? (y/n): ").lower() != "y":
-                return None
-
-
 def start_chat(base_url):
     """Starts an interactive chat session with a chosen model."""
 
     # 1. Get available models
-    try:
-        response = httpx.get(f"{base_url}/tags", timeout=10.0)
-        response.raise_for_status()
-        models = response.json()["models"]
-    except httpx.HTTPError as exc:
-        print(f"HTTP error occurred: {exc}")
-        return
+    response = requests.get(f"{base_url}/tags")
+    response.raise_for_status()
+    models = response.json()["models"]
 
     print("\nAvailable models:")
     for i, model in enumerate(models):
         print(f"{i+1}. {model['name']}")
 
-    # 2. Choose a model
+    # 2. Choose a model (by number, name, or 0/exit to go back)
     while True:
         try:
-            choice = int(input("\nChoose a model number: "))
-            selected_model = models[choice - 1]["name"]
+            choice = input(
+                "\nChoose a model number or name (or 0/exit to go back): "
+            )
+            if choice == "0" or choice.lower() == "exit":
+                return
+            try:
+                choice = int(choice)
+                selected_model = models[choice - 1]["name"]
+            except ValueError:
+                selected_model = choice
+                if not any(
+                    model["name"] == selected_model for model in models
+                ):
+                    raise ValueError("Invalid model name.")
             break
         except (ValueError, IndexError):
-            print("Invalid choice. Please enter a valid number.")
+            print("Invalid choice. Please enter a valid number or model name.")
 
     # 3. Start chatting
-    messages = []
+    messages = [
+        {
+            "role": "system",
+            "content": "You are an Ollama chatbot built by Anas Khan. You have to serve user query be as helpful as possible.",
+        },
+    ]
     while True:
         user_message = input("\nYou: ")
         if user_message.lower() == "exit":
-            break  # Exit the chat loop
+            break
 
         messages.append({"role": "user", "content": user_message})
 
-        try:
-            response = httpx.post(
-                f"{base_url}/chat",
-                json={
-                    "model": selected_model,
-                    "messages": messages,
-                    "stream": True,
-                },
-                stream=True,
-                timeout=10.0,
-            )
-            response.raise_for_status()
-        except httpx.HTTPError as exc:
-            print(f"HTTP error occurred: {exc}")
-            return
+        response = requests.post(
+            f"{base_url}/chat",
+            json={
+                "model": selected_model,
+                "messages": messages,
+                "stream": True,
+            },
+            stream=True,
+        )
+        response.raise_for_status()
 
         print("Assistant: ", end="", flush=True)
         assistant_message = ""
@@ -135,18 +140,22 @@ def download_model(base_url):
     print(
         "Hint: Specify the model size using the format: model:size e.g. llama3.2:3b"
     )
-    model_name = input("Enter the name of the model to download: ")
-    try:
-        response = httpx.post(
-            f"{base_url}/pull",
-            json={"model": model_name},
-            stream=True,
-            timeout=10.0,
-        )
-        response.raise_for_status()
-    except httpx.HTTPError as exc:
-        print(f"HTTP error occurred: {exc}")
+    explore = input(
+        "Would you like to explore models in your browser? (y/n): "
+    )
+    if explore.lower() == "y":
+        webbrowser.open("https://ollama.com/library")
+
+    model_name = input(
+        "Enter the name of the model to download (or 0/exit to go back): "
+    )
+    if model_name == "0" or model_name.lower() == "exit":
         return
+
+    response = requests.post(
+        f"{base_url}/pull", json={"model": model_name}, stream=True
+    )
+    response.raise_for_status()
 
     for line in response.iter_lines():
         if line:
@@ -161,41 +170,91 @@ def download_model(base_url):
 
 def delete_model(base_url):
     """Deletes a model."""
-    model_name = input("Enter the name of the model to delete: ")
-    try:
-        response = httpx.delete(
-            f"{base_url}/delete", json={"model": model_name}, timeout=10.0
-        )
-        response.raise_for_status()
-        print(f"Model '{model_name}' deleted successfully.")
-    except httpx.HTTPError as exc:
-        print(f"HTTP error occurred: {exc}")
+
+    # 1. Get available models
+    response = requests.get(f"{base_url}/tags")
+    response.raise_for_status()
+    models = response.json()["models"]
+
+    print("\nAvailable models:")
+    for i, model in enumerate(models):
+        print(f"{i+1}. {model['name']}")
+
+    # 2. Choose a model (by number, name, or 0/exit to go back)
+    while True:
+        try:
+            choice = input(
+                "\nChoose a model number or name to delete (or 0/exit to go back): "
+            )
+            if choice == "0" or choice.lower() == "exit":
+                return
+            try:
+                choice = int(choice)
+                selected_model = models[choice - 1]["name"]
+            except ValueError:
+                selected_model = choice
+                if not any(
+                    model["name"] == selected_model for model in models
+                ):
+                    raise ValueError("Invalid model name.")
+            break
+        except (ValueError, IndexError):
+            print("Invalid choice. Please enter a valid number or model name.")
+
+    response = requests.delete(
+        f"{base_url}/delete", json={"model": selected_model}
+    )
+    response.raise_for_status()
+    print(f"Model '{selected_model}' deleted successfully.")
 
 
 def load_model(base_url):
     """Loads a model into memory."""
-    model_name = input("Enter the name of the model to load: ")
-    try:
-        response = httpx.post(
-            f"{base_url}/generate", json={"model": model_name}, timeout=10.0
-        )
-        response.raise_for_status()
-        print(f"Model '{model_name}' loaded successfully.")
-    except httpx.HTTPError as exc:
-        print(f"HTTP error occurred: {exc}")
+
+    # 1. Get available models
+    response = requests.get(f"{base_url}/tags")
+    response.raise_for_status()
+    models = response.json()["models"]
+
+    print("\nAvailable models:")
+    for i, model in enumerate(models):
+        print(f"{i+1}. {model['name']}")
+
+    # 2. Choose a model (by number, name, or 0/exit to go back)
+    while True:
+        try:
+            choice = input(
+                "\nChoose a model number or name to load (or 0/exit to go back): "
+            )
+            if choice == "0" or choice.lower() == "exit":
+                return
+            try:
+                choice = int(choice)
+                selected_model = models[choice - 1]["name"]
+            except ValueError:
+                selected_model = choice
+                if not any(
+                    model["name"] == selected_model for model in models
+                ):
+                    raise ValueError("Invalid model name.")
+            break
+        except (ValueError, IndexError):
+            print("Invalid choice. Please enter a valid number or model name.")
+
+    response = requests.post(
+        f"{base_url}/generate", json={"model": selected_model}
+    )
+    response.raise_for_status()
+    print(f"Model '{selected_model}' loaded successfully.")
 
 
 def unload_model(base_url):
     """Unloads a model from memory."""
 
     # 1. Get running models
-    try:
-        response = httpx.get(f"{base_url}/ps", timeout=10.0)
-        response.raise_for_status()
-        models = response.json()["models"]
-    except httpx.HTTPError as exc:
-        print(f"HTTP error occurred: {exc}")
-        return
+    response = requests.get(f"{base_url}/ps")
+    response.raise_for_status()
+    models = response.json()["models"]
 
     if not models:
         print("No models are currently loaded in memory.")
@@ -205,25 +264,33 @@ def unload_model(base_url):
     for i, model in enumerate(models):
         print(f"{i+1}. {model['name']}")
 
-    # 2. Choose a model to unload
+    # 2. Choose a model to unload (by number, name, or 0/exit to go back)
     while True:
         try:
-            choice = int(input("\nChoose a model number to unload: "))
-            selected_model = models[choice - 1]["name"]
+            choice = input(
+                "\nChoose a model number or name to unload (or 0/exit to go back): "
+            )
+            if choice == "0" or choice.lower() == "exit":
+                return
+            try:
+                choice = int(choice)
+                selected_model = models[choice - 1]["name"]
+            except ValueError:
+                selected_model = choice
+                if not any(
+                    model["name"] == selected_model for model in models
+                ):
+                    raise ValueError("Invalid model name.")
             break
         except (ValueError, IndexError):
-            print("Invalid choice. Please enter a valid number.")
+            print("Invalid choice. Please enter a valid number or model name.")
 
-    try:
-        response = httpx.post(
-            f"{base_url}/generate",
-            json={"model": selected_model, "keep_alive": 0},
-            timeout=10.0,
-        )
-        response.raise_for_status()
-        print(f"Model '{selected_model}' unloaded successfully.")
-    except httpx.HTTPError as exc:
-        print(f"HTTP error occurred: {exc}")
+    response = requests.post(
+        f"{base_url}/generate",
+        json={"model": selected_model, "keep_alive": 0},
+    )
+    response.raise_for_status()
+    print(f"Model '{selected_model}' unloaded successfully.")
 
 
 if __name__ == "__main__":

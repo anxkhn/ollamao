@@ -1,4 +1,3 @@
-```markdown
 # Ollamao Chat
 
 #### Ollama + Lmao = Ollamao 🦙
@@ -37,16 +36,16 @@ A good place to start is [Shodan](https://www.shodan.io/search?query=port%3A1143
 ## Requirements
 
 - Python 3.7 or higher
-- `httpx` library
+- `requests` library
 
 ---
 
 ## How to Use
 
-1. **Install the `httpx` library:**
+1. **Install the `requests` library:**
 
    ```bash
-   pip install httpx
+   pip install requests 
    ```
 
 2. **Hunt down a public Ollama instance:**  
@@ -63,7 +62,7 @@ A good place to start is [Shodan](https://www.shodan.io/search?query=port%3A1143
    - Enter the IP address of the Ollama instance.
    - Pick a model from the list (it’ll show you what’s available).
    - Start chatting! Talk, ask questions, or just see what the LLM has to say.
-   - Type "exit" to end the session like a civilized person.
+   - Type "exit" to end the session.
 
 ---
 
@@ -78,10 +77,13 @@ A good place to start is [Shodan](https://www.shodan.io/search?query=port%3A1143
 
 ## Changelog
 
+**1.2.0 - 7 Dec '24**
+
+- Reverted back to using `requests` library as `httpx.delete` doesn't support message body (as per standard).
+
 **1.1.0 - 7 Dec '24**
 
 - Switched from `requests` to `httpx` for improved performance and asynchronous support.
-- Added a 10-second timeout to all API requests.
 - Implemented robust connection handling with retry on failure.
 - Added automatic model listing on startup.
 
