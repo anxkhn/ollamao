@@ -1,3 +1,4 @@
+```markdown
 # Ollamao Chat
 
 #### Ollama + Lmao = Ollamao 🦙
@@ -14,6 +15,7 @@ A good place to start is [Shodan](https://www.shodan.io/search?query=port%3A1143
 
 ## Features
 
+- **Automatic Model Listing:** Connects to the Ollama instance and displays available models upon startup.
 - **Manual IP Input:** Enter the IP of a public Ollama instance you’ve tracked down.
 - **Model Selection:** See which models are hanging out on the instance and pick your chat partner.
 - **Chat History:** Keeps track of your convo so the LLM doesn’t forget who you are mid-sentence.
@@ -22,19 +24,29 @@ A good place to start is [Shodan](https://www.shodan.io/search?query=port%3A1143
 
 ---
 
+## Actions
+
+- **Start chatting:**  Initiates a chat session with the selected model. You can converse with the model, ask it questions, and receive responses in real-time.
+- **Download a model:**  Downloads a new language model from the Ollama library to the Ollama instance. You'll need to provide the model name from ollama.com/library
+- **Delete a model:** Removes a model from the Ollama instance. Be careful with this one!
+- **Load a model into memory:** Loads a model, making it ready for use. This might be necessary for some instances before you can chat with a model.
+- **Unload a model from memory:** Removes a model from the instance's active memory. This can be useful for freeing up resources on the Ollama instance.
+
+---
+
 ## Requirements
 
 - Python 3.7 or higher
-- `requests` library
+- `httpx` library
 
 ---
 
 ## How to Use
 
-1. **Install the `requests` library:**
+1. **Install the `httpx` library:**
 
    ```bash
-   pip install requests
+   pip install httpx
    ```
 
 2. **Hunt down a public Ollama instance:**  
@@ -63,11 +75,17 @@ A good place to start is [Shodan](https://www.shodan.io/search?query=port%3A1143
 
 ---
 
+
+## Changelog
+
+**1.1.0 - 7 Dec '24**
+
+- Switched from `requests` to `httpx` for improved performance and asynchronous support.
+- Added a 10-second timeout to all API requests.
+- Implemented robust connection handling with retry on failure.
+- Added automatic model listing on startup.
+
 **Have fun chatting with Ollamao! 🥳**
 
 API Docs: [Ollama API Documentation](https://github.com/ollama/ollama/blob/main/docs/api.md)  
 Reddit thread that started this madness: [Here’s why grandma can use your Ollama servers](https://www.reddit.com/r/ollama/comments/1guwg0w/your_ollama_servers_are_so_open_even_my_grandma/)
-
----
-
-Enjoy!
