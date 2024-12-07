@@ -10,7 +10,8 @@ This Python script lets you connect to publicly available Ollama instances and c
 
 A good place to start is [Shodan](https://www.shodan.io/search?query=port%3A11434+html%3A%22Ollama%22) or [FOFA](https://en.fofa.info/result?qbase64=cG9ydD0iMTE0MzQiICYmIGJvZHk9Ik9sbGFtYSI%3D)
 
----
+
+
 
 ## Features
 
@@ -21,7 +22,8 @@ A good place to start is [Shodan](https://www.shodan.io/search?query=port%3A1143
 - **Streamed Output:** Responses come through one character at a time for that real-time vibe.
 - **Exit Option:** Type "exit" to gracefully leave the chat instead of ghosting the LLM.
 
----
+
+
 
 ## Actions
 
@@ -31,13 +33,15 @@ A good place to start is [Shodan](https://www.shodan.io/search?query=port%3A1143
 - **Load a model into memory:** Loads a model, making it ready for use. This might be necessary for some instances before you can chat with a model.
 - **Unload a model from memory:** Removes a model from the instance's active memory. This can be useful for freeing up resources on the Ollama instance.
 
----
+
+
 
 ### Getting Started with Ollamao Chat
 
 Follow these steps to get chatting with large language models using **Ollamao**.
 
----
+
+
 
 ## Step 1: Get an IP Address
 
@@ -52,7 +56,8 @@ To connect to an Ollama instance, you'll need its IP address. Here’s how to fi
 3. **Check the Public IP List:**  
    A curated list of active Ollama instances is available [here](https://raw.githubusercontent.com/anxkhn/ollamao/refs/heads/main/ip_list.txt). This is updated regularly with working IPs.
 
----
+
+
 
 ## Step 2: Install Requirements
 
@@ -62,7 +67,8 @@ Ensure you have Python installed (version 3.7 or higher) and the `requests` libr
 pip install requests
 ```
 
----
+
+
 
 ## Step 3: Run the Script
 
@@ -72,7 +78,8 @@ Launch the script with:
 python main.py
 ```
 
----
+
+
 
 ## Step 4: **Connect to an Ollama Instance**
 
@@ -89,7 +96,8 @@ python main.py
    - Unload a model from memory
    - Exit the application
 
----
+
+
 
 ## Step 5: **Interactive Chat**
 
@@ -100,7 +108,8 @@ python main.py
 3. Choose a model by number or name and begin chatting.  
 4. Type `exit` to end the session.
 
----
+
+
 
 ## Additional Features
 
@@ -122,13 +131,15 @@ python main.py
 1. Select **Unload a model from memory**.  
 2. Remove a running model from active memory to free resources.
 
----
+
+
 
 ## Exiting the Script
 
 Type `exit` at any time to gracefully close the session.  
 
----
+
+
 
 
 ## Disclaimer
@@ -137,7 +148,8 @@ Type `exit` at any time to gracefully close the session.
 - **Availability:** Public instances might come and go, so don't blame us if your favorite one vanishes.
 - **Performance:** Response times can vary based on server load, so maybe grab a coffee if things are slow.
 
----
+
+
 
 
 ## Changelog
