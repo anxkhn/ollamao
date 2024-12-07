@@ -79,7 +79,7 @@ A good place to start is [Shodan](https://www.shodan.io/search?query=port%3A1143
 
 **1.2.0 - 7 Dec '24**
 
-- Reverted back to using `requests` library as `httpx.delete` doesn't support message body (as per standard).
+- Reverted back to using `requests` library as `httpx.delete` doesn't support message body (as per standard). [Issue Raised](https://github.com/ollama/ollama/issues/7985)
 
 **1.1.0 - 7 Dec '24**
 
