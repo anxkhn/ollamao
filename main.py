@@ -17,6 +17,7 @@ def main():
         port = port if port else "11434"
         test_url = f"http://{ip_address}:{port}"
         base_url = f"http://{ip_address}:{port}/api"
+        version_url = f"http://{ip_address}:{port}/api/version"
 
         # Check if the Ollama server is running
         try:
@@ -24,6 +25,14 @@ def main():
             response.raise_for_status()
             if "Ollama is running" in response.text:
                 print("Connected to Ollama server successfully!")
+                try:
+                    # Get server version
+                    version_response = requests.get(version_url)
+                    version_response.raise_for_status()
+                    server_version = version_response.json()["version"]
+                    print(f"Server version: {server_version}")
+                except:
+                    print(f"Could not get Ollama server version.")
                 break
             else:
                 print(
