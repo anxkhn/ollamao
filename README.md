@@ -54,10 +54,10 @@ To connect to an Ollama instance, you'll need its IP address. Here’s how to fi
    Access [FOFA](https://en.fofa.info/result?qbase64=cG9ydD0iMTE0MzQiICYmIGJvZHk9Ik9sbGFtYSI%3D) (requires an account) and search for active instances. Use the query `port="11434" && body="Ollama"`.
 
 3. **Check the Public IP List:**  
-   A curated list of active Ollama instances is available [here](https://raw.githubusercontent.com/anxkhn/ollamao/refs/heads/main/ip_list.txt). This is updated regularly with working IPs.
-
-
-
+   A curated list of active Ollama instances is available [here](https://raw.githubusercontent.com/anxkhn/ollamao/refs/heads/main/ip_list.txt). This list is updated regularly with working IPs.
+   
+   Alternatively, visit [benchmark.md](https://raw.githubusercontent.com/anxkhn/ollamao/refs/heads/main/benchmark.md) for a list of public IPs with their Ollama versions and latency.  
+   (Note: This list is updated randomly, so it may not be up to date. It's best to use Shodan or Fofa)
 
 ## Step 2: Install Requirements
 
